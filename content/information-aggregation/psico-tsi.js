@@ -116,7 +116,9 @@ Foxtrick.modules['PsicoTSI'] = {
 		var age = p.age.years;
 		var injured = Foxtrick.Pages.Player.getInjuryWeeks(doc) && true;
 
-		var pr = this.getPrediction(p, Foxtrick.util.currency.getRate());
+		let speciality = Foxtrick.Pages.Player.getSpecialtyNumber(doc);
+
+		var pr = this.getPrediction(p, Foxtrick.util.currency.getRate(), speciality);
 		if (!pr)
 			return;
 
@@ -142,7 +144,9 @@ Foxtrick.modules['PsicoTSI'] = {
 				var injured = p.injuredWeeks && true;
 				var age = p.ageYears;
 
-				var pr = p.psico || module.getPrediction(p, currRate);
+				let speciality = p.specialtyNumber;
+				
+				var pr = p.psico || module.getPrediction(p, currRate, speciality);
 				if (!pr)
 					continue;
 
@@ -172,10 +176,12 @@ Foxtrick.modules['PsicoTSI'] = {
 				var age = p.ageYears;
 				var injured = p.injured;
 
+				let speciality = p.specialtyNumber;
+
 				if (!Foxtrick.hasProp(p, 'keeper') || !age && !Foxtrick.hasProp(p, 'age'))
 					continue;
 
-				var pr = module.getPrediction(p, rate);
+				var pr = module.getPrediction(p, rate, speciality);
 				if (!pr)
 					continue;
 
@@ -210,13 +216,15 @@ Foxtrick.modules['PsicoTSI'] = {
 	 * @param  {number} [currRate]
 	 * @return {PsicoTSIPrediction}
 	 */
-	getPrediction: function(p, currRate) {
+	getPrediction: function(p, currRate, speciality) {
 		if (typeof p.playmaking == 'undefined')
 			return null;
 
 		let age = p.ageYears || p.age.years;
 		let currTSI = p.tsi;
+		// TODO: add here base wage reduction if player has speciality
 		let currWAGE = currRate ? Math.floor(p.salary / (p.isAbroad ? 1.2 : 1) * currRate) : 0;
+		currWAGE = Math.floor(currWAGE / (p.specialtyNumber != 0 ? 1.1 : 1);
 
 		let frm = p.form;
 		let sta = p.stamina;
